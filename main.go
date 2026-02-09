@@ -1,9 +1,7 @@
 package main
 
 import (
-	"breakout/entities"
-	"breakout/input"
-	"breakout/render"
+	"breakout/game"
 	"log"
 
 	"github.com/gdamore/tcell/v3"
@@ -38,26 +36,6 @@ func main() {
 	}
 	defer quit()
 
-	width, _ := s.Size()
-	paddle := entities.NewPaddle(width, 19)
-	renderer := render.NewRenderer(s)
-
-	dx := 1
-	s.Show()
-	for {
-		// Update screen
-		UserAction := input.GetInput(s)
-		if UserAction == input.ActionExit {
-			return
-		}
-		switch UserAction {
-		case input.ActionLeftKeyPressed:
-			paddle.Move(-dx)
-		case input.ActionRightKeyPressed:
-			paddle.Move(dx)
-		}
-		renderer.Clear()
-		renderer.DrawPaddle(paddle)
-		s.Show()
-	}
+	game := game.NewGame(s)
+	game.Run()
 }
