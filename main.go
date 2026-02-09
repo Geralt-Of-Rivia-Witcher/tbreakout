@@ -43,9 +43,9 @@ func main() {
 	renderer := render.NewRenderer(s)
 
 	dx := 1
+	s.Show()
 	for {
 		// Update screen
-		s.Show()
 		UserAction := input.GetInput(s)
 		if UserAction == input.ActionExit {
 			return
@@ -56,6 +56,8 @@ func main() {
 		case input.ActionRightKeyPressed:
 			paddle.Move(dx)
 		}
-		renderer.DrawPaddle(*paddle)
+		renderer.Clear()
+		renderer.DrawPaddle(paddle)
+		s.Show()
 	}
 }

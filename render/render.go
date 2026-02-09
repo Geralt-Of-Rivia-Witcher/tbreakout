@@ -16,12 +16,11 @@ func NewRenderer(screen tcell.Screen) *Renderer {
 	}
 }
 
-func (renderer *Renderer) clear() {
+func (renderer *Renderer) Clear() {
 	renderer.screen.Clear()
 }
 
-func (renderer *Renderer) DrawPaddle(paddle entities.Paddle) {
-	renderer.clear()
+func (renderer *Renderer) DrawPaddle(paddle *entities.Paddle) {
 	_, height := renderer.screen.Size()
 	for i := paddle.X - (paddle.Width / 2); i <= paddle.X+(paddle.Width/2); i++ {
 		renderer.screen.SetContent(i, height-1, '█', nil, tcell.StyleDefault)
