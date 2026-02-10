@@ -13,19 +13,21 @@ const (
 )
 
 func GetInput(s tcell.Screen) InputAction {
-	ev := <-s.EventQ()
-
-	switch ev := ev.(type) {
-	case *tcell.EventKey:
-		if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
-			return ActionExit
+	select {
+	case ev := <-s.EventQ():
+		switch ev := ev.(type) {
+		case *tcell.EventKey:
+			switch ev.Key() {
+			case tcell.KeyEscape, tcell.KeyCtrlC:
+				return ActionExit
+			case tcell.KeyLeft:
+				return ActionLeftKeyPressed
+			case tcell.KeyRight:
+				return ActionRightKeyPressed
+			}
 		}
-		if ev.Key() == tcell.KeyLeft {
-			return ActionLeftKeyPressed
-		}
-		if ev.Key() == tcell.KeyRight {
-			return ActionRightKeyPressed
-		}
+	default:
+		return ActionNone
 	}
 	return ActionUnhandledKeyPressed
 }

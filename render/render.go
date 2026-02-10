@@ -26,3 +26,9 @@ func (renderer *Renderer) DrawPaddle(paddle *entities.Paddle) {
 		renderer.screen.SetContent(i, height-1, '█', nil, tcell.StyleDefault)
 	}
 }
+
+func (renderer *Renderer) DrawBall(ball *entities.Ball) {
+	renderer.screen.SetContent(ball.X-1, ball.Y, '▓', nil, tcell.StyleDefault)
+	renderer.screen.SetContent(ball.X, ball.Y, '▓', nil, tcell.StyleDefault)
+	renderer.screen.SetContent(ball.X+1, ball.Y, '▓', nil, tcell.StyleDefault)
+}
