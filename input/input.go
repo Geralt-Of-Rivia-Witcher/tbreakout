@@ -25,9 +25,10 @@ func GetInput(s tcell.Screen) InputAction {
 			case tcell.KeyRight:
 				return ActionRightKeyPressed
 			}
+			return ActionUnhandledKeyPressed
 		}
 	default:
 		return ActionNone
 	}
-	return ActionUnhandledKeyPressed
+	return ActionNone
 }

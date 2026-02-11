@@ -1,35 +1,33 @@
 package entities
 
 type Paddle struct {
-	X          int
-	leftLimit  int
-	rightLimit int
-	Width      int
+	X     int
+	Width int
+	Speed int
 }
 
-func NewPaddle(screenWidth int, paddleWidth int) *Paddle {
+func NewPaddle(screenWidth int, paddleWidth int, speed int) *Paddle {
 	if paddleWidth%2 == 0 {
 		panic("Paddle width cannot be an even number")
 	}
 	return &Paddle{
-		X:          screenWidth / 2,
-		leftLimit:  0,
-		rightLimit: screenWidth,
-		Width:      paddleWidth,
+		X:     screenWidth / 2,
+		Width: paddleWidth,
+		Speed: speed,
 	}
 }
 
-func (paddle *Paddle) Move(dx int) {
-	paddle.X += dx
-	if dx < 0 {
+func (paddle *Paddle) Move(direction int, screenWidth int) {
+	paddle.X += (paddle.Speed * direction)
+	if direction < 0 {
 		leftEdge := paddle.X - (paddle.Width / 2)
 		if leftEdge <= 0 {
 			paddle.X = paddle.Width / 2
 		}
-	} else if dx > 0 {
+	} else if direction > 0 {
 		rightEdge := paddle.X + (paddle.Width / 2)
-		if rightEdge >= paddle.rightLimit {
-			paddle.X = paddle.rightLimit - (paddle.Width / 2) - 1
+		if rightEdge >= screenWidth {
+			paddle.X = screenWidth - (paddle.Width / 2) - 1
 		}
 	}
 

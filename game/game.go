@@ -3,6 +3,7 @@ package game
 import (
 	"breakout/entities"
 	"breakout/input"
+	"breakout/physics"
 	"breakout/render"
 	"time"
 
@@ -21,7 +22,7 @@ type Game struct {
 func NewGame(screen tcell.Screen) *Game {
 	width, height := screen.Size()
 	renderer := render.NewRenderer(screen)
-	paddle := entities.NewPaddle(width, 19)
+	paddle := entities.NewPaddle(width, 19, 6)
 	ball := entities.NewBall(width, height)
 	bricks := entities.GenerateBricks(5, 20, width)
 
@@ -37,28 +38,32 @@ func NewGame(screen tcell.Screen) *Game {
 
 func (game *Game) Run() {
 	for game.running {
-		game.handleInput()
-		game.detectWallCollision()
-		game.detectPaddleCollision()
-		game.detectBrickCollision()
+		width, height := game.screen.Size()
+		game.handleInput(width)
+		physics.DetectWallCollision(width, game.ball)
+		isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.ball, game.paddle)
+		if !isAlive {
+			game.running = false
+		}
+		physics.DetectBrickCollision(game.ball, game.bricks)
 		game.ball.Move()
 		game.render()
 		time.Sleep(50 * time.Millisecond)
 	}
 }
 
-func (game *Game) handleInput() {
-	dx := 6
-
+func (game *Game) handleInput(screenWidth int) {
 	UserAction := input.GetInput(game.screen)
 	if UserAction == input.ActionExit {
 		game.running = false
 	}
 	switch UserAction {
 	case input.ActionLeftKeyPressed:
-		game.paddle.Move(-dx)
+		game.paddle.Move(-1, screenWidth)
 	case input.ActionRightKeyPressed:
-		game.paddle.Move(dx)
+		game.paddle.Move(1, screenWidth)
+	case input.ActionExit:
+		game.running = false
 	}
 }
 
@@ -68,56 +73,4 @@ func (game *Game) render() {
 	game.renderer.DrawBall(game.ball)
 	game.renderer.DrawBricks(game.bricks)
 	game.screen.Show()
-}
-
-func (game *Game) detectWallCollision() {
-	width, _ := game.screen.Size()
-	if game.ball.X <= 2 || game.ball.X >= width-2 {
-		game.ball.Dx = -game.ball.Dx
-	}
-	if game.ball.Y <= 0 {
-		game.ball.Dy = -game.ball.Dy
-	}
-}
-
-func (game *Game) detectPaddleCollision() {
-	_, height := game.screen.Size()
-	if game.ball.Y == height-1 {
-		paddleStart := game.paddle.X - game.paddle.Width/2
-		paddleEnd := game.paddle.X + game.paddle.Width/2
-		if paddleStart <= game.ball.X && game.ball.X <= paddleEnd {
-			game.ball.Dy = -game.ball.Dy
-		}
-	}
-	if game.ball.Y >= height {
-		game.running = false
-	}
-}
-
-func (game *Game) detectBrickCollision() {
-	ballX := game.ball.X
-	ballY := game.ball.Y
-	for _, brick := range game.bricks {
-		if brick.Alive {
-			brickStartX := brick.X - (brick.Width / 2)
-			brickEndX := brick.X + (brick.Width / 2)
-			if game.ball.Dy > 0 {
-				if ballY+1 == brick.Y {
-					if brickStartX <= ballX && ballX <= brickEndX {
-						brick.Alive = false
-						game.ball.Dy = -game.ball.Dy
-						break
-					}
-				}
-			} else {
-				if ballY-1 == brick.Y {
-					if brickStartX <= ballX && ballX <= brickEndX {
-						brick.Alive = false
-						game.ball.Dy = -game.ball.Dy
-						break
-					}
-				}
-			}
-		}
-	}
 }

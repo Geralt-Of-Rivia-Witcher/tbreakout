@@ -12,30 +12,30 @@ func main() {
 	defStyle := tcell.StyleDefault.Background(color.Black).Foreground(color.White)
 
 	// Initialize screen
-	s, err := tcell.NewScreen()
+	screen, err := tcell.NewScreen()
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	if err := s.Init(); err != nil {
+	if err := screen.Init(); err != nil {
 		log.Fatalf("%+v", err)
 	}
-	s.SetStyle(defStyle)
-	s.EnableMouse()
-	s.EnablePaste()
-	s.Clear()
+	screen.SetStyle(defStyle)
+	screen.EnableMouse()
+	screen.EnablePaste()
+	screen.Clear()
 
 	quit := func() {
 		// You have to catch panics in a defer, clean up, and
 		// re-raise them - otherwise your application can
 		// die without leaving any diagnostic trace.
 		maybePanic := recover()
-		s.Fini()
+		screen.Fini()
 		if maybePanic != nil {
 			panic(maybePanic)
 		}
 	}
 	defer quit()
 
-	game := game.NewGame(s)
+	game := game.NewGame(screen)
 	game.Run()
 }
