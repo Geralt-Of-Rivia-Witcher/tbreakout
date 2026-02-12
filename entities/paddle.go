@@ -17,6 +17,10 @@ func NewPaddle(screenWidth int, paddleWidth int, speed int) *Paddle {
 	}
 }
 
+func (paddle *Paddle) ResetPaddle(screenWidth int) {
+	paddle.X = screenWidth / 2
+}
+
 func (paddle *Paddle) Move(direction int, screenWidth int) {
 	paddle.X += (paddle.Speed * direction)
 	if direction < 0 {

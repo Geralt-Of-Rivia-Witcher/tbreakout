@@ -15,7 +15,7 @@ func DetectPaddleCollisionAndCheckIfAlive(screenHeight int, ball *entities.Ball,
 	if ball.Y == screenHeight-1 {
 		paddleStart := paddle.X - paddle.Width/2
 		paddleEnd := paddle.X + paddle.Width/2
-		if paddleStart <= ball.X && ball.X <= paddleEnd {
+		if paddleStart-1 <= ball.X && ball.X <= paddleEnd+1 {
 			ball.Dy = -ball.Dy
 			midOfMidOfPaddle := ((paddle.Width / 2) / 2) + 1
 
@@ -44,20 +44,25 @@ func DetectPaddleCollisionAndCheckIfAlive(screenHeight int, ball *entities.Ball,
 	return true
 }
 
-func DetectBrickCollision(ball *entities.Ball, bricks []*entities.Brick) {
+func DetectBrickCollisionAndGetScoreGained(ball *entities.Ball, bricks []*entities.Brick) int {
 	ballX := ball.X
 	ballY := ball.Y
+
+	score := 0
 	for _, brick := range bricks {
-		if brick.Alive {
-			brickStartX := brick.X - (brick.Width / 2)
-			brickEndX := brick.X + (brick.Width / 2)
-			if ballY+ball.Dy == brick.Y {
-				if brickStartX-1 <= ballX && ballX <= brickEndX+1 {
-					brick.Alive = false
-					ball.Dy = -ball.Dy
-					break
-				}
+		if !brick.Alive {
+			continue
+		}
+		brickStartX := brick.X - (brick.Width / 2)
+		brickEndX := brick.X + (brick.Width / 2)
+		if ballY+ball.Dy == brick.Y {
+			if brickStartX-1 <= ballX && ballX <= brickEndX+1 {
+				brick.Alive = false
+				score += 100
+				ball.Dy = -ball.Dy
+				break
 			}
 		}
 	}
+	return score
 }

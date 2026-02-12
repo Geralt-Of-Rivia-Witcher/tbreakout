@@ -24,3 +24,8 @@ func (ball *Ball) Move() {
 	ball.X += ball.Dx
 	ball.Y += ball.Dy
 }
+
+func (ball *Ball) ResetBall(screenWidth int, screenHeight int) {
+	ball.X = screenWidth / 2
+	ball.Y = screenHeight - 2
+}

@@ -16,6 +16,8 @@ type Game struct {
 	paddle   *entities.Paddle
 	ball     *entities.Ball
 	bricks   []*entities.Brick
+	score    int
+	lives    int
 	running  bool
 }
 
@@ -32,6 +34,8 @@ func NewGame(screen tcell.Screen) *Game {
 		paddle:   paddle,
 		ball:     ball,
 		bricks:   bricks,
+		score:    0,
+		lives:    3,
 		running:  true,
 	}
 }
@@ -43,9 +47,15 @@ func (game *Game) Run() {
 		physics.DetectWallCollision(width, game.ball)
 		isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.ball, game.paddle)
 		if !isAlive {
-			game.running = false
+			game.lives--
+			if game.lives > 0 {
+				game.paddle.ResetPaddle(width)
+				game.ball.ResetBall(width, height)
+			} else {
+				game.running = false
+			}
 		}
-		physics.DetectBrickCollision(game.ball, game.bricks)
+		game.score += physics.DetectBrickCollisionAndGetScoreGained(game.ball, game.bricks)
 		game.ball.Move()
 		game.render()
 		time.Sleep(50 * time.Millisecond)
