@@ -35,9 +35,9 @@ func (renderer *Renderer) DrawBall(ball *entities.Ball) {
 
 func (renderer *Renderer) DrawBricks(bricks []*entities.Brick) {
 	for _, brick := range bricks {
-		for i := 1; i <= brick.Width; i++ {
+		for i := brick.X - 2; i <= brick.X+2; i++ {
 			if brick.Alive {
-				renderer.screen.SetContent(brick.X+i, brick.Y, '▓', nil, tcell.StyleDefault)
+				renderer.screen.SetContent(i, brick.Y, '▓', nil, tcell.StyleDefault)
 			}
 		}
 	}

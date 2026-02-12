@@ -22,9 +22,9 @@ type Game struct {
 func NewGame(screen tcell.Screen) *Game {
 	width, height := screen.Size()
 	renderer := render.NewRenderer(screen)
-	paddle := entities.NewPaddle(width, 19, 6)
+	paddle := entities.NewPaddle(width, 23, 6)
 	ball := entities.NewBall(width, height)
-	bricks := entities.GenerateBricks(5, 20, width)
+	bricks := entities.GenerateBricks(5, 2, width)
 
 	return &Game{
 		screen:   screen,
