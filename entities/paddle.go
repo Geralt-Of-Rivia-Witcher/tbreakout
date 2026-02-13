@@ -27,13 +27,13 @@ func (paddle *Paddle) Move(direction int, screenWidth int) {
 	paddle.X += (paddle.Speed * direction)
 	if direction < 0 {
 		leftEdge := paddle.X - (paddle.Width / 2)
-		if leftEdge <= 0 {
-			paddle.X = paddle.Width / 2
+		if leftEdge <= 2 {
+			paddle.X = paddle.Width/2 + 2
 		}
 	} else if direction > 0 {
 		rightEdge := paddle.X + (paddle.Width / 2)
-		if rightEdge >= screenWidth {
-			paddle.X = screenWidth - (paddle.Width / 2) - 1
+		if rightEdge >= screenWidth-2 {
+			paddle.X = screenWidth - (paddle.Width / 2) - 2
 		}
 	}
 
