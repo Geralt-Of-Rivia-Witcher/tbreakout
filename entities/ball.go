@@ -28,4 +28,7 @@ func (ball *Ball) Move() {
 func (ball *Ball) ResetBall(screenWidth int, screenHeight int) {
 	ball.X = screenWidth / 2
 	ball.Y = screenHeight - 2
+	ball.Dx = 0
+	ball.Dy = -BallSpeed
+	ball.BallSpeed = 1
 }

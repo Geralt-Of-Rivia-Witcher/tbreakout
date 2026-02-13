@@ -2,16 +2,18 @@ package entities
 
 type Paddle struct {
 	X     int
+	Y     int
 	Width int
 	Speed int
 }
 
-func NewPaddle(screenWidth int, paddleWidth int, speed int) *Paddle {
+func NewPaddle(screenWidth int, screenHeight int, paddleWidth int, speed int) *Paddle {
 	if paddleWidth%2 == 0 {
 		panic("Paddle width cannot be an even number")
 	}
 	return &Paddle{
 		X:     screenWidth / 2,
+		Y:     screenHeight - 2,
 		Width: paddleWidth,
 		Speed: speed,
 	}

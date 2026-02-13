@@ -3,19 +3,20 @@ package physics
 import "breakout/entities"
 
 func DetectWallCollision(screenWidth int, ball *entities.Ball) {
-	if ball.X <= 1 || ball.X >= screenWidth-2 {
+	if ball.X <= 4 || ball.X >= screenWidth-3 {
 		ball.Dx = -ball.Dx
 	}
-	if ball.Y <= 0 {
+	if ball.Y <= 6 {
 		ball.Dy = -ball.Dy
 	}
 }
 
 func DetectPaddleCollisionAndCheckIfAlive(screenHeight int, ball *entities.Ball, paddle *entities.Paddle) bool {
-	if ball.Y == screenHeight-1 {
-		paddleStart := paddle.X - paddle.Width/2
-		paddleEnd := paddle.X + paddle.Width/2
-		if paddleStart-1 <= ball.X && ball.X <= paddleEnd+1 {
+	ballNextY := ball.Y + ball.Dy
+	if ballNextY == paddle.Y {
+		paddleStart := paddle.X - paddle.Width/2 - 1
+		paddleEnd := paddle.X + paddle.Width/2 + 1
+		if paddleStart <= ball.X && ball.X <= paddleEnd {
 			ball.Dy = -ball.Dy
 			midOfMidOfPaddle := ((paddle.Width / 2) / 2) + 1
 
@@ -49,6 +50,7 @@ func DetectBrickCollisionAndGetScoreGained(ball *entities.Ball, bricks []*entiti
 	ballY := ball.Y
 
 	score := 0
+	hit := false
 	for _, brick := range bricks {
 		if !brick.Alive {
 			continue
@@ -59,10 +61,12 @@ func DetectBrickCollisionAndGetScoreGained(ball *entities.Ball, bricks []*entiti
 			if brickStartX-1 <= ballX && ballX <= brickEndX+1 {
 				brick.Alive = false
 				score += 100
-				ball.Dy = -ball.Dy
-				break
+				hit = true
 			}
 		}
+	}
+	if hit {
+		ball.Dy = -ball.Dy
 	}
 	return score
 }

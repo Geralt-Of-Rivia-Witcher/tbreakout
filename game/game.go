@@ -24,9 +24,9 @@ type Game struct {
 func NewGame(screen tcell.Screen) *Game {
 	width, height := screen.Size()
 	renderer := render.NewRenderer(screen)
-	paddle := entities.NewPaddle(width, 23, 6)
+	paddle := entities.NewPaddle(width, height, 23, 6)
 	ball := entities.NewBall(width, height)
-	bricks := entities.GenerateBricks(5, 2, width)
+	bricks := entities.GenerateBricks(5, 2, width, 6)
 
 	return &Game{
 		screen:   screen,
@@ -57,7 +57,7 @@ func (game *Game) Run() {
 		}
 		game.score += physics.DetectBrickCollisionAndGetScoreGained(game.ball, game.bricks)
 		game.ball.Move()
-		game.render()
+		game.render(width, height)
 		time.Sleep(50 * time.Millisecond)
 	}
 }
@@ -77,8 +77,9 @@ func (game *Game) handleInput(screenWidth int) {
 	}
 }
 
-func (game *Game) render() {
+func (game *Game) render(screenWidth int, screenHeight int) {
 	game.renderer.Clear()
+	game.renderer.DrawHUD(game.lives, game.score, screenWidth, screenHeight)
 	game.renderer.DrawPaddle(game.paddle)
 	game.renderer.DrawBall(game.ball)
 	game.renderer.DrawBricks(game.bricks)

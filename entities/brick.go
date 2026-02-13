@@ -18,7 +18,7 @@ func NewBrick(X int, Y int) *Brick {
 	}
 }
 
-func GenerateBricks(rows int, cols int, screenWidth int) []*Brick {
+func GenerateBricks(rows int, cols int, screenWidth int, startY int) []*Brick {
 	var bricks []*Brick
 	const brickWidth = 5
 	const spacing = 1
@@ -27,7 +27,7 @@ func GenerateBricks(rows int, cols int, screenWidth int) []*Brick {
 	for i := 1; i <= rows; i++ {
 		startX := emptySpaceAroungBrickArea / 2
 		for j := 1; j <= cols; j++ {
-			bricks = append(bricks, NewBrick(startX+(brickWidth/2), i+i))
+			bricks = append(bricks, NewBrick(startX+(brickWidth/2), startY+i+i))
 			startX += (brickWidth + 1)
 		}
 	}
