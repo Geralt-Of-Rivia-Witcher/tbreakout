@@ -2,5 +2,5 @@ package constants
 
 const (
 	BorderWidth         = 1
-	TopHUDElementHeight = 7
+	TopHUDElementHeight = 5
 )

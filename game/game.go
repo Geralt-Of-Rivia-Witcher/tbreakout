@@ -1,6 +1,7 @@
 package game
 
 import (
+	"breakout/constants"
 	"breakout/entities"
 	"breakout/input"
 	"breakout/physics"
@@ -26,7 +27,7 @@ func NewGame(screen tcell.Screen) *Game {
 	renderer := render.NewRenderer(screen)
 	paddle := entities.NewPaddle(width, height, 23, 6)
 	ball := entities.NewBall(width, height)
-	bricks := entities.GenerateBricks(5, 2, width, 6)
+	bricks := entities.GenerateBricks(5, 2, width, constants.TopHUDElementHeight)
 
 	return &Game{
 		screen:   screen,
