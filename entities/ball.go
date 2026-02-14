@@ -1,5 +1,7 @@
 package entities
 
+import "breakout/constants"
+
 const BallSpeed = 1
 
 type Ball struct {
@@ -13,7 +15,7 @@ type Ball struct {
 func NewBall(screenWidth int, screenHeight int) *Ball {
 	return &Ball{
 		X:         screenWidth / 2,
-		Y:         screenHeight - 2,
+		Y:         screenHeight - constants.BorderWidth - 1,
 		Dx:        0,
 		Dy:        -BallSpeed,
 		BallSpeed: 1,

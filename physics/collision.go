@@ -1,12 +1,16 @@
 package physics
 
-import "breakout/entities"
+import (
+	"breakout/constants"
+	"breakout/entities"
+)
 
 func DetectWallCollision(screenWidth int, ball *entities.Ball) {
-	if ball.X <= 4 || ball.X >= screenWidth-3 {
+	nextBallX := ball.X + ball.Dx
+	if nextBallX <= constants.BorderWidth+2 || nextBallX >= screenWidth-constants.BorderWidth-2 {
 		ball.Dx = -ball.Dx
 	}
-	if ball.Y <= 6 {
+	if ball.Y <= constants.TopHUDElementHeight+1 {
 		ball.Dy = -ball.Dy
 	}
 }
