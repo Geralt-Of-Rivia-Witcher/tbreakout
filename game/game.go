@@ -42,9 +42,12 @@ func NewGame(screen tcell.Screen) *Game {
 }
 
 func (game *Game) Run() {
+	userInputChannel := make(chan input.InputAction, 16)
+	go input.GetInput(game.screen, userInputChannel)
+
 	for game.running {
 		width, height := game.screen.Size()
-		game.handleInput(width)
+		game.handleInput(width, userInputChannel)
 		physics.DetectWallCollision(width, game.ball)
 		isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.ball, game.paddle)
 		if !isAlive {
@@ -63,18 +66,23 @@ func (game *Game) Run() {
 	}
 }
 
-func (game *Game) handleInput(screenWidth int) {
-	UserAction := input.GetInput(game.screen)
-	if UserAction == input.ActionExit {
-		game.running = false
-	}
-	switch UserAction {
-	case input.ActionLeftKeyPressed:
-		game.paddle.Move(-1, screenWidth)
-	case input.ActionRightKeyPressed:
-		game.paddle.Move(1, screenWidth)
-	case input.ActionExit:
-		game.running = false
+func (game *Game) handleInput(screenWidth int, userInputChannel chan input.InputAction) {
+	for {
+		select {
+		case userAction := <-userInputChannel:
+			switch userAction {
+			case input.ActionLeftKeyPressed:
+				game.paddle.Move(-1, screenWidth)
+
+			case input.ActionRightKeyPressed:
+				game.paddle.Move(1, screenWidth)
+
+			case input.ActionExit:
+				game.running = false
+			}
+		default:
+			return
+		}
 	}
 }
 

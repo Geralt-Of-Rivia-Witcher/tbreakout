@@ -1,6 +1,8 @@
 package input
 
-import "github.com/gdamore/tcell/v3"
+import (
+	"github.com/gdamore/tcell/v3"
+)
 
 type InputAction int
 
@@ -9,26 +11,21 @@ const (
 	ActionExit
 	ActionLeftKeyPressed
 	ActionRightKeyPressed
-	ActionUnhandledKeyPressed
 )
 
-func GetInput(s tcell.Screen) InputAction {
-	select {
-	case ev := <-s.EventQ():
+func GetInput(s tcell.Screen, userInputChannel chan InputAction) {
+	for {
+		ev := <-s.EventQ()
 		switch ev := ev.(type) {
 		case *tcell.EventKey:
 			switch ev.Key() {
 			case tcell.KeyEscape, tcell.KeyCtrlC:
-				return ActionExit
+				userInputChannel <- ActionExit
 			case tcell.KeyLeft:
-				return ActionLeftKeyPressed
+				userInputChannel <- ActionLeftKeyPressed
 			case tcell.KeyRight:
-				return ActionRightKeyPressed
+				userInputChannel <- ActionRightKeyPressed
 			}
-			return ActionUnhandledKeyPressed
 		}
-	default:
-		return ActionNone
 	}
-	return ActionNone
 }
