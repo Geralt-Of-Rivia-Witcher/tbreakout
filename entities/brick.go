@@ -33,3 +33,12 @@ func GenerateBricks(rows int, cols int, screenWidth int, startY int) []*Brick {
 	}
 	return bricks
 }
+
+func AreAllBricksDead(bricks []*Brick) bool {
+	for _, brick := range bricks {
+		if brick.Alive {
+			return false
+		}
+	}
+	return true
+}

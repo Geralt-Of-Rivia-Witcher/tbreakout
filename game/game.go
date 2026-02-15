@@ -58,7 +58,7 @@ func (game *Game) Run() {
 	showSubtitle := false
 	for game.running {
 		width, height := game.screen.Size()
-		game.handleInput(width, userInputChannel, game.gameState)
+		game.handleInput(width, height, userInputChannel, game.gameState)
 		switch game.gameState {
 		case StateTitle:
 			showSubtitle = !showSubtitle
@@ -73,18 +73,26 @@ func (game *Game) Run() {
 					game.paddle.ResetPaddle(width)
 					game.ball.ResetBall(width, height)
 				} else {
-					game.running = false
+					game.gameState = StateGameOver
 				}
 			}
-			game.score += physics.DetectBrickCollisionAndGetScoreGained(game.ball, game.bricks)
+			scoredGained, remainingBricks := physics.DetectBrickCollisionAndGetScoreGainedAndRemainingBricks(game.ball, game.bricks)
+			game.score += scoredGained
+			if remainingBricks == 0 {
+				game.gameState = StateGameOver
+			}
 			game.ball.Move()
 			game.render(width, height)
 			time.Sleep(50 * time.Millisecond)
+
+		case StateGameOver:
+			gameWon := entities.AreAllBricksDead(game.bricks)
+			render.DrawGameOverScreen(game.screen, width, height, game.score, gameWon)
 		}
 	}
 }
 
-func (game *Game) handleInput(screenWidth int, userInputChannel chan input.InputAction, gameState GameState) {
+func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChannel chan input.InputAction, gameState GameState) {
 	for {
 		select {
 		case userAction := <-userInputChannel:
@@ -106,6 +114,16 @@ func (game *Game) handleInput(screenWidth int, userInputChannel chan input.Input
 
 			case input.ActionExit:
 				game.running = false
+
+			case input.ActionRKeyPressed:
+				if game.gameState == StateGameOver {
+					game.paddle.ResetPaddle(screenWidth)
+					game.ball.ResetBall(screenWidth, screenHeight)
+					game.bricks = entities.GenerateBricks(5, 2, screenWidth, constants.TopHUDElementHeight)
+					game.lives = 3
+					game.score = 0
+					game.gameState = StatePlaying
+				}
 			}
 		default:
 			return

@@ -31,8 +31,7 @@ func (renderer *Renderer) DrawPaddle(paddle *entities.Paddle) {
 }
 
 func (renderer *Renderer) DrawHUD(lives int, score int, screenWidth int, screenHeight int) {
-	style := tcell.StyleDefault.Foreground(color.White)
-	style = tcell.StyleDefault.Background(color.Black)
+	style := tcell.StyleDefault.Foreground(color.White).Background(color.Black)
 
 	drawSpacer(screenWidth, constants.BorderWidth, renderer.screen)
 
@@ -62,8 +61,7 @@ func drawBroders(screen tcell.Screen, screenWidth int, screenHeight int, style t
 }
 
 func drawSpacer(screenWidth int, y int, screen tcell.Screen) {
-	style := tcell.StyleDefault.Foreground(color.White)
-	style = tcell.StyleDefault.Background(color.Black)
+	style := tcell.StyleDefault.Foreground(color.White).Background(color.Black)
 	for i := 1; i <= screenWidth-1; i++ {
 		screen.SetContent(i, y, '=', nil, style)
 	}

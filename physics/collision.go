@@ -49,16 +49,18 @@ func DetectPaddleCollisionAndCheckIfAlive(screenHeight int, ball *entities.Ball,
 	return true
 }
 
-func DetectBrickCollisionAndGetScoreGained(ball *entities.Ball, bricks []*entities.Brick) int {
+func DetectBrickCollisionAndGetScoreGainedAndRemainingBricks(ball *entities.Ball, bricks []*entities.Brick) (int, int) {
 	ballX := ball.X
 	ballY := ball.Y
 
 	score := 0
 	hit := false
+	remainingBricks := 0
 	for _, brick := range bricks {
 		if !brick.Alive {
 			continue
 		}
+		remainingBricks++
 		brickStartX := brick.X - (brick.Width / 2)
 		brickEndX := brick.X + (brick.Width / 2)
 		if ballY+ball.Dy == brick.Y {
@@ -72,5 +74,5 @@ func DetectBrickCollisionAndGetScoreGained(ball *entities.Ball, bricks []*entiti
 	if hit {
 		ball.Dy = -ball.Dy
 	}
-	return score
+	return score, remainingBricks
 }
