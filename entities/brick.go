@@ -8,7 +8,7 @@ type Brick struct {
 	Alive  bool
 }
 
-func NewBrick(X int, Y int) *Brick {
+func newBrick(X int, Y int) *Brick {
 	return &Brick{
 		X:      X,
 		Y:      Y,
@@ -27,7 +27,7 @@ func GenerateBricks(rows int, cols int, screenWidth int, startY int) []*Brick {
 	for i := 1; i <= rows; i++ {
 		startX := emptySpaceAroungBrickArea / 2
 		for j := 1; j <= cols; j++ {
-			bricks = append(bricks, NewBrick(startX+(brickWidth/2), startY+i+i))
+			bricks = append(bricks, newBrick(startX+(brickWidth/2), startY+i+i))
 			startX += (brickWidth + 1)
 		}
 	}

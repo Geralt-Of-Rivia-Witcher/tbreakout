@@ -11,15 +11,24 @@ import (
 	"github.com/gdamore/tcell/v3"
 )
 
+type GameState int
+
+const (
+	StateTitle GameState = iota
+	StatePlaying
+	StateGameOver
+)
+
 type Game struct {
-	screen   tcell.Screen
-	renderer *render.Renderer
-	paddle   *entities.Paddle
-	ball     *entities.Ball
-	bricks   []*entities.Brick
-	score    int
-	lives    int
-	running  bool
+	screen    tcell.Screen
+	renderer  *render.Renderer
+	paddle    *entities.Paddle
+	ball      *entities.Ball
+	bricks    []*entities.Brick
+	score     int
+	lives     int
+	gameState GameState
+	running   bool
 }
 
 func NewGame(screen tcell.Screen) *Game {
@@ -30,14 +39,15 @@ func NewGame(screen tcell.Screen) *Game {
 	bricks := entities.GenerateBricks(5, 2, width, constants.TopHUDElementHeight)
 
 	return &Game{
-		screen:   screen,
-		renderer: renderer,
-		paddle:   paddle,
-		ball:     ball,
-		bricks:   bricks,
-		score:    0,
-		lives:    3,
-		running:  true,
+		screen:    screen,
+		renderer:  renderer,
+		paddle:    paddle,
+		ball:      ball,
+		bricks:    bricks,
+		score:     0,
+		lives:     3,
+		gameState: StateTitle,
+		running:   true,
 	}
 }
 
@@ -45,37 +55,54 @@ func (game *Game) Run() {
 	userInputChannel := make(chan input.InputAction, 16)
 	go input.GetInput(game.screen, userInputChannel)
 
+	showSubtitle := false
 	for game.running {
 		width, height := game.screen.Size()
-		game.handleInput(width, userInputChannel)
-		physics.DetectWallCollision(width, game.ball)
-		isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.ball, game.paddle)
-		if !isAlive {
-			game.lives--
-			if game.lives > 0 {
-				game.paddle.ResetPaddle(width)
-				game.ball.ResetBall(width, height)
-			} else {
-				game.running = false
+		game.handleInput(width, userInputChannel, game.gameState)
+		switch game.gameState {
+		case StateTitle:
+			showSubtitle = !showSubtitle
+			render.DrawTitleScreen(game.screen, width, height, showSubtitle)
+			time.Sleep(400 * time.Millisecond)
+		case StatePlaying:
+			physics.DetectWallCollision(width, game.ball)
+			isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.ball, game.paddle)
+			if !isAlive {
+				game.lives--
+				if game.lives > 0 {
+					game.paddle.ResetPaddle(width)
+					game.ball.ResetBall(width, height)
+				} else {
+					game.running = false
+				}
 			}
+			game.score += physics.DetectBrickCollisionAndGetScoreGained(game.ball, game.bricks)
+			game.ball.Move()
+			game.render(width, height)
+			time.Sleep(50 * time.Millisecond)
 		}
-		game.score += physics.DetectBrickCollisionAndGetScoreGained(game.ball, game.bricks)
-		game.ball.Move()
-		game.render(width, height)
-		time.Sleep(50 * time.Millisecond)
 	}
 }
 
-func (game *Game) handleInput(screenWidth int, userInputChannel chan input.InputAction) {
+func (game *Game) handleInput(screenWidth int, userInputChannel chan input.InputAction, gameState GameState) {
 	for {
 		select {
 		case userAction := <-userInputChannel:
 			switch userAction {
+			case input.ActionEnterKeyPressed:
+				if gameState == StateTitle {
+					game.gameState = StatePlaying
+				}
+
 			case input.ActionLeftKeyPressed:
-				game.paddle.Move(-1, screenWidth)
+				if gameState == StatePlaying {
+					game.paddle.Move(-1, screenWidth)
+				}
 
 			case input.ActionRightKeyPressed:
-				game.paddle.Move(1, screenWidth)
+				if gameState == StatePlaying {
+					game.paddle.Move(1, screenWidth)
+				}
 
 			case input.ActionExit:
 				game.running = false

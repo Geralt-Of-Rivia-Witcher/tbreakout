@@ -11,6 +11,7 @@ const (
 	ActionExit
 	ActionLeftKeyPressed
 	ActionRightKeyPressed
+	ActionEnterKeyPressed
 )
 
 func GetInput(s tcell.Screen, userInputChannel chan InputAction) {
@@ -25,6 +26,8 @@ func GetInput(s tcell.Screen, userInputChannel chan InputAction) {
 				userInputChannel <- ActionLeftKeyPressed
 			case tcell.KeyRight:
 				userInputChannel <- ActionRightKeyPressed
+			case tcell.KeyEnter:
+				userInputChannel <- ActionEnterKeyPressed
 			}
 		}
 	}
