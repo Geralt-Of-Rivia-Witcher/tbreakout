@@ -41,18 +41,20 @@ func (renderer *Renderer) DrawHUD(lives int, score int, screenWidth int, screenH
 
 	drawSpacer(screenWidth, constants.TopHUDElementHeight, renderer.screen)
 	drawBroders(renderer.screen, screenWidth, screenHeight, style)
+
+	renderer.DrawInputHints(screenWidth, screenHeight)
 }
 
 func drawBroders(screen tcell.Screen, screenWidth int, screenHeight int, style tcell.Style) {
 	for i := 1; i <= screenWidth; i++ {
-		screen.SetContent(i, screenHeight-constants.BorderWidth, '━', nil, style)
+		screen.SetContent(i, screenHeight-constants.BottomBorderHeight, '━', nil, style)
 	}
-	for i := 1; i <= screenHeight; i++ {
+	for i := 1; i < screenHeight-constants.BottomBorderHeight; i++ {
 		screen.SetContent(constants.BorderWidth, i, '|', nil, style)
 		screen.SetContent(screenWidth-constants.BorderWidth, i, '|', nil, style)
 	}
-	screen.SetContent(constants.BorderWidth, screenHeight-constants.BorderWidth, '└', nil, style)
-	screen.SetContent(screenWidth-constants.BorderWidth, screenHeight-constants.BorderWidth, '┘', nil, style)
+	screen.SetContent(constants.BorderWidth, screenHeight-constants.BottomBorderHeight, '└', nil, style)
+	screen.SetContent(screenWidth-constants.BorderWidth, screenHeight-constants.BottomBorderHeight, '┘', nil, style)
 	screen.SetContent(constants.BorderWidth, constants.BorderWidth, '┌', nil, style)
 	screen.SetContent(screenWidth-constants.BorderWidth, constants.BorderWidth, '┐', nil, style)
 	screen.SetContent(screenWidth-constants.BorderWidth, constants.BorderWidth, '┐', nil, style)
@@ -93,5 +95,20 @@ func (renderer *Renderer) DrawBricks(bricks []*entities.Brick) {
 				renderer.screen.SetContent(i, brick.Y, '▓', nil, tcell.StyleDefault)
 			}
 		}
+	}
+}
+
+func (renderer *Renderer) DrawInputHints(screenWidth, screenHeight int) {
+	style := tcell.StyleDefault.
+		Foreground(color.Gainsboro).
+		Background(color.Black)
+
+	hint := "< > MOVE    ESC QUIT"
+
+	y := screenHeight - constants.BorderWidth - 1
+	x := (screenWidth - len(hint)) / 2
+
+	for i, ch := range hint {
+		renderer.screen.SetContent(x+i, y, ch, nil, style)
 	}
 }

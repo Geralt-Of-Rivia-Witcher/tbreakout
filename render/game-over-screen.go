@@ -89,7 +89,7 @@ func drawCenteredLine(
 	style tcell.Style,
 ) {
 	startX := (screenWidth - width) / 2
-	for i := 0; i < width; i++ {
+	for i := range width {
 		screen.SetContent(startX+i, y, ch, nil, style)
 	}
 }

@@ -15,7 +15,7 @@ func NewPaddle(screenWidth int, screenHeight int, paddleWidth int, speed int) *P
 	}
 	return &Paddle{
 		X:     screenWidth / 2,
-		Y:     screenHeight - constants.BorderWidth - 1,
+		Y:     screenHeight - constants.BottomBorderHeight - 1,
 		Width: paddleWidth,
 		Speed: speed,
 	}
