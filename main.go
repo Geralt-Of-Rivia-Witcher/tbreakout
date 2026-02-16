@@ -1,13 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/game"
 	"github.com/gdamore/tcell/v3"
 )
 
+var Version = "dev"
+
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--version" {
+		fmt.Println(Version)
+		return
+	}
+
 	defStyle := tcell.StyleDefault
 
 	// Initialize screen
