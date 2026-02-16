@@ -76,8 +76,8 @@ jobs:
             -e "s/^  version \".*\"/  version \"${VERSION}\"/" \
             -e "s|/download/v[^/]*/tbreakout-darwin-arm64|/download/${TAG}/tbreakout-darwin-arm64|" \
             -e "s|/download/v[^/]*/tbreakout-darwin-amd64|/download/${TAG}/tbreakout-darwin-amd64|" \
-            -e "s/sha256 \".*\"/sha256 \"${SHA_ARM64}\"/1" \
-            -e "s/sha256 \".*\"/sha256 \"${SHA_AMD64}\"/2" \
+            -e "/arm64/{n;s/sha256 \".*\"/sha256 \"${SHA_ARM64}\"/;}" \
+            -e "/amd64/{n;s/sha256 \".*\"/sha256 \"${SHA_AMD64}\"/;}" \
             "${FORMULA}"
 
       - name: Test Homebrew formula
