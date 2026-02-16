@@ -85,7 +85,7 @@ jobs:
           brew tap Geralt-Of-Rivia-Witcher/homebrew-tbreakout ./homebrew-tbreakout
           brew install --verbose tbreakout
           brew test tbreakout
-          brew audit --strict ./homebrew-tbreakout/Formula/tbreakout.rb
+          brew audit --strict tbreakout
 
       - name: Commit Homebrew formula changes
         run: |
