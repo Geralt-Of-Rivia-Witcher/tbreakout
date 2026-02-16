@@ -100,8 +100,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.HOMEBREW_BREAKOUT_REPO_PR_TOKEN }}
         run: |
+          cd homebrew-tbreakout
           gh pr create \
-            --repo Geralt-Of-Rivia-Witcher/homebrew-tbreakout \
             --head update-tbreakout-${GITHUB_REF_NAME} \
             --base main \
             --title "tbreakout ${GITHUB_REF_NAME}" \
