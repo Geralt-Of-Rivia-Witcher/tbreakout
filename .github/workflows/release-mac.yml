@@ -103,6 +103,6 @@ jobs:
           cd homebrew-tbreakout
           gh pr create \
             --head update-tbreakout-${GITHUB_REF_NAME} \
-            --base main \
+            --base master \
             --title "tbreakout ${GITHUB_REF_NAME}" \
             --body "Automated Homebrew formula update for ${GITHUB_REF_NAME}"
