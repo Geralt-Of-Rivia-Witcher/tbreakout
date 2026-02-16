@@ -2,7 +2,6 @@ package render
 
 import (
 	"github.com/gdamore/tcell/v3"
-	"github.com/gdamore/tcell/v3/color"
 )
 
 func DrawTitleScreen(
@@ -26,18 +25,9 @@ func DrawTitleScreen(
 	startX := (screenWidth - titleWidth) / 2
 	startY := (screenHeight-titleHeight)/2 - 2
 
-	titleStyle := tcell.StyleDefault.
-		Foreground(color.Yellow).
-		Background(color.Black).
-		Bold(true)
-
-	dividerStyle := tcell.StyleDefault.
-		Foreground(color.DarkGray).
-		Background(color.Black)
-
-	subStyle := tcell.StyleDefault.
-		Foreground(color.White).
-		Background(color.Black)
+	titleStyle := titleTextStyle()
+	dividerStyle := dividerLineStyle()
+	subStyle := subtitleTextStyle()
 
 	// Draw title
 	for y, line := range title {

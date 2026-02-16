@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v3"
-	"github.com/gdamore/tcell/v3/color"
 )
 
 func DrawGameOverScreen(
@@ -20,28 +19,14 @@ func DrawGameOverScreen(
 
 	if gameWon {
 		title = "YOU WIN!"
-		titleStyle = tcell.StyleDefault.
-			Foreground(color.Green).
-			Background(color.Black).
-			Bold(true)
+		titleStyle = gameWonStyle()
 	} else {
 		title = "GAME OVER"
-		titleStyle = tcell.StyleDefault.
-			Foreground(color.Red).
-			Background(color.Black).
-			Bold(true)
+		titleStyle = gameLostStyle()
 	}
-	dimStyle := tcell.StyleDefault.
-		Foreground(color.DarkGray).
-		Background(color.Black)
-
-	valueStyle := tcell.StyleDefault.
-		Foreground(color.White).
-		Background(color.Black)
-
-	restartStyle := tcell.StyleDefault.
-		Foreground(color.Gray).
-		Background(color.Black)
+	dimStyle := dividerLineStyle()
+	valueStyle := scoreStyle()
+	restartStyle := gameOverHintStyle()
 
 	centerY := screenHeight / 2
 

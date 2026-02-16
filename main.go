@@ -5,11 +5,10 @@ import (
 	"log"
 
 	"github.com/gdamore/tcell/v3"
-	"github.com/gdamore/tcell/v3/color"
 )
 
 func main() {
-	defStyle := tcell.StyleDefault.Background(color.Black).Foreground(color.White)
+	defStyle := tcell.StyleDefault
 
 	// Initialize screen
 	screen, err := tcell.NewScreen()

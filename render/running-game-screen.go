@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v3"
-	"github.com/gdamore/tcell/v3/color"
 )
 
 type Renderer struct {
@@ -24,23 +23,25 @@ func (renderer *Renderer) Clear() {
 }
 
 func (renderer *Renderer) DrawPaddle(paddle *entities.Paddle) {
+	style := paddleStyle()
 	paddleLengthOnEachSideOfCenter := paddle.Width / 2
 	for i := paddle.X - paddleLengthOnEachSideOfCenter; i <= paddle.X+paddleLengthOnEachSideOfCenter; i++ {
-		renderer.screen.SetContent(i, paddle.Y, '█', nil, tcell.StyleDefault)
+		renderer.screen.SetContent(i, paddle.Y, '█', nil, style)
 	}
 }
 
 func (renderer *Renderer) DrawHUD(lives int, score int, screenWidth int, screenHeight int) {
-	style := tcell.StyleDefault.Foreground(color.White).Background(color.Black)
+	border := borderStyle()
+	label := hudLabelStyle()
 
 	drawSpacer(screenWidth, constants.BorderWidth, renderer.screen)
 
-	drawText(renderer.screen, screenWidth/3, 3, "LIVES: ", style)
-	drawLives(renderer.screen, screenWidth/3+5, 3, lives, style)
-	drawText(renderer.screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), style)
+	drawText(renderer.screen, screenWidth/3, 3, "LIVES: ", label)
+	drawLives(renderer.screen, screenWidth/3+5, 3, lives)
+	drawText(renderer.screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
 
 	drawSpacer(screenWidth, constants.TopHUDElementHeight, renderer.screen)
-	drawBroders(renderer.screen, screenWidth, screenHeight, style)
+	drawBroders(renderer.screen, screenWidth, screenHeight, border)
 
 	renderer.DrawInputHints(screenWidth, screenHeight)
 }
@@ -63,13 +64,14 @@ func drawBroders(screen tcell.Screen, screenWidth int, screenHeight int, style t
 }
 
 func drawSpacer(screenWidth int, y int, screen tcell.Screen) {
-	style := tcell.StyleDefault.Foreground(color.White).Background(color.Black)
+	style := borderStyle()
 	for i := 1; i <= screenWidth-1; i++ {
 		screen.SetContent(i, y, '=', nil, style)
 	}
 }
 
-func drawLives(screen tcell.Screen, x int, y int, lives int, style tcell.Style) {
+func drawLives(screen tcell.Screen, x int, y int, lives int) {
+	style := livesStyle()
 	for i := 1; i <= lives; i++ {
 		screen.SetContent(x+i*2, y, '♥', nil, style)
 	}
@@ -82,26 +84,26 @@ func drawText(screen tcell.Screen, x int, y int, text string, style tcell.Style)
 }
 
 func (renderer *Renderer) DrawBall(ball *entities.Ball) {
-	renderer.screen.SetContent(ball.X-1, ball.Y, '▓', nil, tcell.StyleDefault)
-	renderer.screen.SetContent(ball.X, ball.Y, '▓', nil, tcell.StyleDefault)
-	renderer.screen.SetContent(ball.X+1, ball.Y, '▓', nil, tcell.StyleDefault)
+	style := ballStyle()
+	renderer.screen.SetContent(ball.X-1, ball.Y, '▓', nil, style)
+	renderer.screen.SetContent(ball.X, ball.Y, '▓', nil, style)
+	renderer.screen.SetContent(ball.X+1, ball.Y, '▓', nil, style)
 }
 
 func (renderer *Renderer) DrawBricks(bricks []*entities.Brick) {
 	for _, brick := range bricks {
 		brickLengthOnEachSideOfCenter := brick.Width / 2
+		style := baseStyle().Foreground(brickColorAtY(brick.Y)).Bold(true)
 		for i := brick.X - brickLengthOnEachSideOfCenter; i <= brick.X+brickLengthOnEachSideOfCenter; i++ {
 			if brick.Alive {
-				renderer.screen.SetContent(i, brick.Y, '▓', nil, tcell.StyleDefault)
+				renderer.screen.SetContent(i, brick.Y, '▓', nil, style)
 			}
 		}
 	}
 }
 
 func (renderer *Renderer) DrawInputHints(screenWidth, screenHeight int) {
-	style := tcell.StyleDefault.
-		Foreground(color.Gainsboro).
-		Background(color.Black)
+	style := inputHintStyle()
 
 	hint := "< > MOVE    ESC QUIT"
 
