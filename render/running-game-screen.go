@@ -1,10 +1,10 @@
 package render
 
 import (
-	"breakout/constants"
-	"breakout/entities"
 	"fmt"
 
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/constants"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/entities"
 	"github.com/gdamore/tcell/v3"
 )
 

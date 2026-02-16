@@ -1,6 +1,6 @@
 package entities
 
-import "breakout/constants"
+import "github.com/Geralt-Of-Rivia-Witcher/tbreakout/constants"
 
 const BallSpeed = 1
 

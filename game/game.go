@@ -1,13 +1,13 @@
 package game
 
 import (
-	"breakout/constants"
-	"breakout/entities"
-	"breakout/input"
-	"breakout/physics"
-	"breakout/render"
 	"time"
 
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/constants"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/entities"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/input"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/physics"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/render"
 	"github.com/gdamore/tcell/v3"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"breakout/game"
 	"log"
 
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/game"
 	"github.com/gdamore/tcell/v3"
 )
 

@@ -1,8 +1,8 @@
 package physics
 
 import (
-	"breakout/constants"
-	"breakout/entities"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/constants"
+	"github.com/Geralt-Of-Rivia-Witcher/tbreakout/entities"
 )
 
 func DetectWallCollision(screenWidth int, ball *entities.Ball) {

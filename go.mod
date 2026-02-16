@@ -1,4 +1,4 @@
-module breakout
+module github.com/Geralt-Of-Rivia-Witcher/tbreakout
 
 go 1.25.6
 
