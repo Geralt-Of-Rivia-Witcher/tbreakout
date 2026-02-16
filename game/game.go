@@ -36,7 +36,7 @@ func NewGame(screen tcell.Screen) *Game {
 	renderer := render.NewRenderer(screen)
 	paddle := entities.NewPaddle(width, height, 23, 6)
 	ball := entities.NewBall(width, height)
-	bricks := entities.GenerateBricks(3, 19, width, constants.TopHUDElementHeight+1)
+	bricks := entities.GenerateRandomLayout(width, constants.TopHUDElementHeight+1)
 
 	return &Game{
 		screen:    screen,
@@ -119,7 +119,7 @@ func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChanne
 				if game.gameState == StateGameOver {
 					game.paddle.ResetPaddle(screenWidth)
 					game.ball.ResetBall(screenWidth, screenHeight)
-					game.bricks = entities.GenerateBricks(5, 2, screenWidth, constants.TopHUDElementHeight)
+					game.bricks = entities.GenerateRandomLayout(screenWidth, constants.TopHUDElementHeight+1)
 					game.lives = 3
 					game.score = 0
 					game.gameState = StatePlaying

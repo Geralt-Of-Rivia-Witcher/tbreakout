@@ -64,9 +64,9 @@ func DetectBrickCollisionAndGetScoreGainedAndRemainingBricks(ball *entities.Ball
 		brickStartX := brick.X - (brick.Width / 2)
 		brickEndX := brick.X + (brick.Width / 2)
 		nextBallY := ball.Y + ball.Dy
-		if nextBallY == brick.Y {
+		if nextBallY == brick.Y || ball.Y == brick.Y { // need to test this part more.
 			nextBallX := ball.X + ball.Dx
-			if brickStartX-1 <= nextBallX && nextBallX <= brickEndX+1 {
+			if brickStartX-2 <= nextBallX && nextBallX <= brickEndX+2 {
 				brick.Alive = false
 				score += 100
 				hit = true
