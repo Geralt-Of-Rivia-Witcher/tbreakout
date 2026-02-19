@@ -1,0 +1,63 @@
+name: Release binaries
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build and publish binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.6"
+
+      - name: Build binaries
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          echo "Building version ${VERSION}"
+
+          mkdir -p dist
+
+          # macOS Intel
+          GOOS=darwin GOARCH=amd64 \
+            go build -ldflags "-X main.Version=${VERSION}" \
+            -o dist/tbreakout-darwin-amd64
+
+          # macOS Apple Silicon
+          GOOS=darwin GOARCH=arm64 \
+            go build -ldflags "-X main.Version=${VERSION}" \
+            -o dist/tbreakout-darwin-arm64
+
+          # Linux AMD64 (Arch, Ubuntu, Debian)
+          GOOS=linux GOARCH=amd64 \
+            go build -ldflags "-X main.Version=${VERSION}" \
+            -o dist/tbreakout-linux-amd64
+
+          # Linux ARM64 (future-proof)
+          GOOS=linux GOARCH=arm64 \
+            go build -ldflags "-X main.Version=${VERSION}" \
+            -o dist/tbreakout-linux-arm64
+
+      - name: Make binaries executable
+        run: |
+          chmod +x dist/*
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/tbreakout-darwin-amd64
+            dist/tbreakout-darwin-arm64
+            dist/tbreakout-linux-amd64
+            dist/tbreakout-linux-arm64

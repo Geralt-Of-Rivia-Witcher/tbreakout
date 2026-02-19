@@ -1,0 +1,89 @@
+name: Update Homebrew Formula
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  homebrew:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout source repo (for metadata only)
+        uses: actions/checkout@v4
+
+      - name: Extract version info
+        run: |
+          echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Download macOS release binaries
+        run: |
+          mkdir -p dist
+          gh release download "$TAG" \
+            --repo Geralt-Of-Rivia-Witcher/tbreakout \
+            --pattern "tbreakout-darwin-*"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute SHA256 checksums
+        run: |
+          SHA_AMD64=$(shasum -a 256 tbreakout-darwin-amd64 | awk '{print $1}')
+          SHA_ARM64=$(shasum -a 256 tbreakout-darwin-arm64 | awk '{print $1}')
+
+          echo "SHA_AMD64=$SHA_AMD64" >> $GITHUB_ENV
+          echo "SHA_ARM64=$SHA_ARM64" >> $GITHUB_ENV
+
+      - name: Checkout Homebrew tap repo
+        uses: actions/checkout@v4
+        with:
+          repository: Geralt-Of-Rivia-Witcher/homebrew-tbreakout
+          token: ${{ secrets.HOMEBREW_BREAKOUT_REPO_PR_TOKEN }}
+          path: homebrew-tbreakout
+
+      - name: Create update branch
+        run: |
+          cd homebrew-tbreakout
+          git checkout -b update-tbreakout-${TAG}
+
+      - name: Update Homebrew formula
+        run: |
+          FORMULA="homebrew-tbreakout/Formula/tbreakout.rb"
+
+          sed -i '' \
+            -e "s/^  version \".*\"/  version \"${VERSION}\"/" \
+            -e "s|/download/v[^/]*/tbreakout-darwin-arm64|/download/${TAG}/tbreakout-darwin-arm64|" \
+            -e "s|/download/v[^/]*/tbreakout-darwin-amd64|/download/${TAG}/tbreakout-darwin-amd64|" \
+            -e "/arm64/{n;s/sha256 \".*\"/sha256 \"${SHA_ARM64}\"/;}" \
+            -e "/amd64/{n;s/sha256 \".*\"/sha256 \"${SHA_AMD64}\"/;}" \
+            "$FORMULA"
+
+      - name: Test Homebrew formula
+        run: |
+          brew tap Geralt-Of-Rivia-Witcher/tbreakout ./homebrew-tbreakout
+          brew install --verbose tbreakout
+          brew test tbreakout
+
+      - name: Commit changes
+        run: |
+          cd homebrew-tbreakout
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add Formula/tbreakout.rb
+          git commit -m "tbreakout ${TAG}"
+          git push origin HEAD
+
+      - name: Create Homebrew PR
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_BREAKOUT_REPO_PR_TOKEN }}
+        run: |
+          cd homebrew-tbreakout
+          gh pr create \
+            --head update-tbreakout-${TAG} \
+            --base master \
+            --title "tbreakout ${TAG}" \
+            --body "Automated Homebrew formula update for ${TAG}"
