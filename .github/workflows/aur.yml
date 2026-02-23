@@ -1,0 +1,66 @@
+name: Auto-publish to AUR
+
+on:
+  workflow_run:
+    workflows: ["Release binaries"]
+    types:
+      - completed
+
+jobs:
+  aur:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract tag
+        run: |
+          TAG="${{ github.event.workflow_run.head_branch }}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
+      - name: Set up SSH for AUR
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+
+      - name: Clone AUR repo
+        run: |
+          git clone ssh://aur@aur.archlinux.org/tbreakout-bin.git aur
+
+      - name: Download Linux binary from GitHub Release
+        run: |
+          gh release download "$TAG" \
+            --repo Geralt-Of-Rivia-Witcher/tbreakout \
+            --pattern "tbreakout-linux-amd64"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute SHA256
+        run: |
+          SHA=$(sha256sum tbreakout-linux-amd64 | awk '{print $1}')
+          echo "SHA256=$SHA" >> $GITHUB_ENV
+
+      - name: Update PKGBUILD
+        run: |
+          cd aur
+          sed -i \
+            -e "s/^pkgver=.*/pkgver=${VERSION}/" \
+            -e "s/^pkgrel=.*/pkgrel=1/" \
+            -e "s/^sha256sums=.*/sha256sums=('${SHA256}')/" \
+            PKGBUILD
+
+      - name: Regenerate .SRCINFO
+        run: |
+          cd aur
+          makepkg --printsrcinfo > .SRCINFO
+
+      - name: Commit and push to AUR
+        run: |
+          cd aur
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add PKGBUILD .SRCINFO
+          git commit -m "tbreakout-bin ${VERSION}"
+          git push origin master
