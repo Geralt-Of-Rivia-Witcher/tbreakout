@@ -35,7 +35,9 @@ jobs:
           GIT_SSH_COMMAND: ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
         run: |
           set -e
+          rm -rf aur
           git clone ssh://aur@aur.archlinux.org/tbreakout-bin.git aur
+          ls -la aur
           test -d aur/.git
 
       - name: Download Linux binary from GitHub Release
@@ -79,8 +81,8 @@ jobs:
           chown -R builder:builder aur
 
       - name: Regenerate .SRCINFO
+        working-directory: aur
         run: |
-          cd aur
           sudo -u builder makepkg --printsrcinfo > .SRCINFO
 
       - name: Commit and push to AUR
@@ -88,8 +90,10 @@ jobs:
         env:
           GIT_SSH_COMMAND: ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
         run: |
+          git rev-parse --is-inside-work-tree
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git status
           git add PKGBUILD .SRCINFO
           git commit -m "tbreakout-bin ${VERSION}"
           git push origin master
