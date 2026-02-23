@@ -30,15 +30,9 @@ jobs:
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-          cat >> ~/.ssh/config <<'EOF'
-          Host aur.archlinux.org
-            HostName aur.archlinux.org
-            User aur
-            IdentityFile ~/.ssh/id_ed25519
-            StrictHostKeyChecking no
-          EOF
-
       - name: Clone AUR repo
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
         run: |
           git clone ssh://aur@aur.archlinux.org/tbreakout-bin.git aur
 
@@ -70,6 +64,8 @@ jobs:
           makepkg --printsrcinfo > .SRCINFO
 
       - name: Commit and push to AUR
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
         run: |
           cd aur
           git config user.name "github-actions"
