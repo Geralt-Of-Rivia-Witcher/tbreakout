@@ -22,7 +22,7 @@ jobs:
       - name: Install required packages
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -S --noconfirm base-devel git openssh github-cli
+          pacman -S --noconfirm base-devel git openssh github-cli sudo
 
       - name: Set up SSH for AUR
         run: |
@@ -58,10 +58,15 @@ jobs:
             -e "s/^sha256sums=.*/sha256sums=('${SHA256}')/" \
             PKGBUILD
 
+      - name: Create non-root build user
+        run: |
+          useradd -m builder
+          chown -R builder:builder aur
+
       - name: Regenerate .SRCINFO
         run: |
           cd aur
-          makepkg --printsrcinfo > .SRCINFO
+          sudo -u builder makepkg --printsrcinfo > .SRCINFO
 
       - name: Commit and push to AUR
         env:
