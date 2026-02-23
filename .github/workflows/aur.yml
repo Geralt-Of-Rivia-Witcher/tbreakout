@@ -19,6 +19,11 @@ jobs:
           echo "TAG=$TAG" >> $GITHUB_ENV
           echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
+      - name: Install required packages
+        run: |
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -S --noconfirm base-devel git openssh github-cli
+
       - name: Set up SSH for AUR
         run: |
           mkdir -p ~/.ssh
@@ -51,11 +56,6 @@ jobs:
             -e "s/^pkgrel=.*/pkgrel=1/" \
             -e "s/^sha256sums=.*/sha256sums=('${SHA256}')/" \
             PKGBUILD
-
-      - name: Install base-devel and git
-        run: |
-          pacman -Sy --noconfirm archlinux-keyring
-          pacman -S --noconfirm base-devel git
 
       - name: Regenerate .SRCINFO
         run: |
