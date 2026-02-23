@@ -29,7 +29,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+
+          cat >> ~/.ssh/config <<'EOF'
+          Host aur.archlinux.org
+            HostName aur.archlinux.org
+            User aur
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          EOF
 
       - name: Clone AUR repo
         run: |
