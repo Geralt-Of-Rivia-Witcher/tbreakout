@@ -52,11 +52,24 @@ jobs:
       - name: Update PKGBUILD
         run: |
           cd aur
+
           sed -i \
             -e "s/^pkgver=.*/pkgver=${VERSION}/" \
             -e "s/^pkgrel=.*/pkgrel=1/" \
-            -e "s/^sha256sums=.*/sha256sums=('${SHA256}')/" \
             PKGBUILD
+
+          # Replace sha256sums block safely
+          awk -v hash="${SHA256}" '
+            /^sha256sums=\(/ {
+              print "sha256sums=('\"" hash "\"')"
+              skip=1
+              next
+            }
+            skip && /^\)/ { skip=0; next }
+            !skip { print }
+          ' PKGBUILD > PKGBUILD.new
+
+          mv PKGBUILD.new PKGBUILD
 
       - name: Create non-root build user
         run: |
