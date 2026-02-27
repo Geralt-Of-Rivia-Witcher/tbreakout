@@ -17,13 +17,28 @@ A terminal Breakout clone written in Go using `tcell`.
 - `R`: Restart after game over
 - `Esc` or `Ctrl+C`: Quit
 
-## Install (macOS via Homebrew)
+## Installation
+
+### Linux (AUR)
+
+```bash
+yay -S tbreakout-bin
+tbreakout
+```
+
+### macOS (Homebrew)
 
 ```bash
 brew tap Geralt-Of-Rivia-Witcher/tbreakout
 brew install tbreakout
 tbreakout
 ```
+
+## Source
+
+*   **Linux (AUR):** https://aur.archlinux.org/packages/tbreakout-bin
+*   **macOS (Homebrew):** https://github.com/Geralt-Of-Rivia-Witcher/homebrew-tbreakout/
+
 
 ## Run From Source
 
