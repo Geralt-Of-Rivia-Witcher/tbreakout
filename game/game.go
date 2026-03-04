@@ -36,7 +36,7 @@ func NewGame(screen tcell.Screen) *Game {
 	renderer := render.NewRenderer(screen)
 	paddle := entities.NewPaddle(width, height, 23, 6)
 	ball := entities.NewBall(width, height)
-	bricks := entities.GenerateRandomLayout(width, constants.TopHUDElementHeight+2)
+	bricks := entities.GenerateRandomLayout(width, constants.TopHUDElementHeight+3)
 
 	return &Game{
 		screen:    screen,

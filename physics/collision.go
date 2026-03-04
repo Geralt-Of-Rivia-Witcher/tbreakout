@@ -10,7 +10,8 @@ func DetectWallCollision(screenWidth int, ball *entities.Ball) {
 	if nextBallX <= constants.BorderWidth+2 || nextBallX >= screenWidth-constants.BorderWidth-2 {
 		ball.Dx = -ball.Dx
 	}
-	if ball.Y <= constants.TopHUDElementHeight+1 {
+	nextBallY := ball.Y + ball.Dy
+	if nextBallY <= constants.TopHUDElementHeight {
 		ball.Dy = -ball.Dy
 	}
 }
