@@ -120,7 +120,7 @@ func (renderer *Renderer) DrawBricks(bricks []*entities.Brick) {
 func (renderer *Renderer) DrawInputHints(screenWidth, screenHeight int) {
 	style := inputHintStyle()
 
-	hint := "[<-][->] MOVE   [ESC] QUIT"
+	hint := "[<-][->] MOVE   [R] RESTART   [ESC] QUIT"
 
 	y := screenHeight - constants.BorderWidth - 1
 	x := (screenWidth - len(hint)) / 2
