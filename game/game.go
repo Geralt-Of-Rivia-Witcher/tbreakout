@@ -116,12 +116,14 @@ func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChanne
 				game.running = false
 
 			case input.ActionRKeyPressed:
-				game.paddle.ResetPaddle(screenWidth)
-				game.ball.ResetBall(screenWidth, screenHeight)
-				game.bricks = entities.GenerateRandomLayout(screenWidth, constants.TopHUDElementHeight+2)
-				game.lives = 3
-				game.score = 0
-				game.gameState = StatePlaying
+				if game.gameState == StatePlaying || game.gameState == StateGameOver {
+					game.paddle.ResetPaddle(screenWidth)
+					game.ball.ResetBall(screenWidth, screenHeight)
+					game.bricks = entities.GenerateRandomLayout(screenWidth, constants.TopHUDElementHeight+2)
+					game.lives = 3
+					game.score = 0
+					game.gameState = StatePlaying
+				}
 			}
 		default:
 			return
