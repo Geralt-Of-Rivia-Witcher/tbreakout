@@ -62,14 +62,15 @@ jobs:
             -e "s/^pkgrel=.*/pkgrel=1/" \
             PKGBUILD
 
-          # Replace sha256sums block safely
+          # Replace sha256sums block safely, without dropping following functions
           awk -v hash="${SHA256}" '
             /^sha256sums=\(/ {
               print "sha256sums=('\"" hash "\"')"
-              skip=1
+              if ($0 ~ /\)/) skip=0
+              else skip=1
               next
             }
-            skip && /^\)/ { skip=0; next }
+            skip && /^[[:space:]]*\)/ { skip=0; next }
             !skip { print }
           ' PKGBUILD > PKGBUILD.new
 
