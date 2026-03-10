@@ -8,8 +8,6 @@ on:
 
 jobs:
   aur:
-    # Disabling this action until it is properly fixed
-    if: false
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
