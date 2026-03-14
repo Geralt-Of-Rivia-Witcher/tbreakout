@@ -8,43 +8,48 @@ import (
 	"github.com/gdamore/tcell/v3"
 )
 
-type Renderer struct {
-	screen tcell.Screen
+func RenderRunningGameScreen(
+	screen tcell.Screen,
+	screenWidth, screenHeight, lives, score int,
+	paddle *entities.Paddle,
+	bricks []*entities.Brick,
+	ball *entities.Ball,
+) {
+	clear(screen)
+	DrawHUD(lives, score, screenWidth, screenHeight, screen)
+	DrawPaddle(paddle, screen)
+	DrawBall(ball, screen)
+	DrawBricks(bricks, screen)
+	screen.Show()
 }
 
-func NewRenderer(screen tcell.Screen) *Renderer {
-	return &Renderer{
-		screen: screen,
-	}
+func clear(screen tcell.Screen) {
+	screen.SetStyle(baseStyle())
+	screen.Clear()
 }
 
-func (renderer *Renderer) Clear() {
-	renderer.screen.SetStyle(baseStyle())
-	renderer.screen.Clear()
-}
-
-func (renderer *Renderer) DrawPaddle(paddle *entities.Paddle) {
+func DrawPaddle(paddle *entities.Paddle, screen tcell.Screen) {
 	style := paddleStyle()
 	paddleLengthOnEachSideOfCenter := paddle.Width / 2
 	for i := paddle.X - paddleLengthOnEachSideOfCenter; i <= paddle.X+paddleLengthOnEachSideOfCenter; i++ {
-		renderer.screen.SetContent(i, paddle.Y, '▓', nil, style)
+		screen.SetContent(i, paddle.Y, '▓', nil, style)
 	}
 }
 
-func (renderer *Renderer) DrawHUD(lives int, score int, screenWidth int, screenHeight int) {
+func DrawHUD(lives int, score int, screenWidth int, screenHeight int, screen tcell.Screen) {
 	border := borderStyle()
 	label := hudLabelStyle()
 
-	drawSpacer(screenWidth, constants.BorderWidth, renderer.screen)
+	drawSpacer(screenWidth, constants.BorderWidth, screen)
 
-	drawText(renderer.screen, screenWidth/3, 3, "LIVES: ", label)
-	drawLives(renderer.screen, screenWidth/3+5, 3, lives)
-	drawText(renderer.screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
+	drawText(screen, screenWidth/3, 3, "LIVES: ", label)
+	drawLives(screen, screenWidth/3+5, 3, lives)
+	drawText(screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
 
-	drawSpacer(screenWidth, constants.TopHUDElementHeight, renderer.screen)
-	drawBorders(renderer.screen, screenWidth, screenHeight, border)
+	drawSpacer(screenWidth, constants.TopHUDElementHeight, screen)
+	drawBorders(screen, screenWidth, screenHeight, border)
 
-	renderer.DrawInputHints(screenWidth, screenHeight)
+	DrawInputHints(screenWidth, screenHeight, screen)
 }
 
 func drawBorders(screen tcell.Screen, screenWidth int, screenHeight int, style tcell.Style) {
@@ -98,26 +103,26 @@ func drawText(screen tcell.Screen, x int, y int, text string, style tcell.Style)
 	}
 }
 
-func (renderer *Renderer) DrawBall(ball *entities.Ball) {
+func DrawBall(ball *entities.Ball, screen tcell.Screen) {
 	style := ballStyle()
-	renderer.screen.SetContent(ball.X-1, ball.Y, '█', nil, style)
-	renderer.screen.SetContent(ball.X, ball.Y, '█', nil, style)
-	renderer.screen.SetContent(ball.X+1, ball.Y, '█', nil, style)
+	screen.SetContent(ball.X-1, ball.Y, '█', nil, style)
+	screen.SetContent(ball.X, ball.Y, '█', nil, style)
+	screen.SetContent(ball.X+1, ball.Y, '█', nil, style)
 }
 
-func (renderer *Renderer) DrawBricks(bricks []*entities.Brick) {
+func DrawBricks(bricks []*entities.Brick, screen tcell.Screen) {
 	for _, brick := range bricks {
 		brickLengthOnEachSideOfCenter := brick.Width / 2
 		style := baseStyle().Foreground(brickColorAtY(brick.Y)).Bold(true)
 		for i := brick.X - brickLengthOnEachSideOfCenter; i <= brick.X+brickLengthOnEachSideOfCenter; i++ {
 			if brick.Alive {
-				renderer.screen.SetContent(i, brick.Y, '█', nil, style)
+				screen.SetContent(i, brick.Y, '█', nil, style)
 			}
 		}
 	}
 }
 
-func (renderer *Renderer) DrawInputHints(screenWidth, screenHeight int) {
+func DrawInputHints(screenWidth, screenHeight int, screen tcell.Screen) {
 	style := inputHintStyle()
 
 	hint := "[<-][->] MOVE   [R] RESTART   [ESC] QUIT"
@@ -126,6 +131,6 @@ func (renderer *Renderer) DrawInputHints(screenWidth, screenHeight int) {
 	x := (screenWidth - len(hint)) / 2
 
 	for i, ch := range hint {
-		renderer.screen.SetContent(x+i, y, ch, nil, style)
+		screen.SetContent(x+i, y, ch, nil, style)
 	}
 }
