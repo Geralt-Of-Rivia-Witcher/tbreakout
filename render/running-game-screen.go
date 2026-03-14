@@ -10,13 +10,13 @@ import (
 
 func RenderRunningGameScreen(
 	screen tcell.Screen,
-	screenWidth, screenHeight, lives, score int,
+	screenWidth, screenHeight, lives, score, level int,
 	paddle *entities.Paddle,
 	bricks []*entities.Brick,
 	ball *entities.Ball,
 ) {
 	clear(screen)
-	DrawHUD(lives, score, screenWidth, screenHeight, screen)
+	DrawHUD(lives, score, screenWidth, screenHeight, level, screen)
 	DrawPaddle(paddle, screen)
 	DrawBall(ball, screen)
 	DrawBricks(bricks, screen)
@@ -36,14 +36,17 @@ func DrawPaddle(paddle *entities.Paddle, screen tcell.Screen) {
 	}
 }
 
-func DrawHUD(lives int, score int, screenWidth int, screenHeight int, screen tcell.Screen) {
+func DrawHUD(lives, score, screenWidth, screenHeight, level int, screen tcell.Screen) {
 	border := borderStyle()
 	label := hudLabelStyle()
+	levelText := fmt.Sprintf("LEVEL: %d", level+1)
+	levelX := (screenWidth - len(levelText)) / 2
 
 	drawSpacer(screenWidth, constants.BorderWidth, screen)
 
 	drawText(screen, screenWidth/3, 3, "LIVES: ", label)
 	drawLives(screen, screenWidth/3+5, 3, lives)
+	drawText(screen, levelX, 3, levelText, levelStyle())
 	drawText(screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
 
 	drawSpacer(screenWidth, constants.TopHUDElementHeight, screen)

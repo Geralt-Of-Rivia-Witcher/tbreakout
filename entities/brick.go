@@ -1,7 +1,5 @@
 package entities
 
-import "math/rand"
-
 type Brick struct {
 	X      int
 	Y      int
@@ -126,10 +124,10 @@ func GenerateDiamond(
 	return bricks
 }
 
-func GenerateRandomLayout(
-	screenWidth, startY int,
+func GenerateLayoutForLevel(
+	screenWidth, startY, level int,
 ) []*Brick {
-	switch rand.Intn(5) {
+	switch level {
 	case 0:
 		return GenerateClassicGrid(7, 12, screenWidth, startY)
 	case 1:
@@ -138,8 +136,10 @@ func GenerateRandomLayout(
 		return GeneratePyramid(9, screenWidth, startY)
 	case 3:
 		return GenerateCheckerboard(9, 12, screenWidth, startY)
-	default:
+	case 4:
 		return GenerateDiamond(12, screenWidth, startY)
+	default:
+		panic("Level not configured")
 	}
 }
 

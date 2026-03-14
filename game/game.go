@@ -16,6 +16,7 @@ type GameState int
 const (
 	StateTitle GameState = iota
 	StatePlaying
+	StateLevelCleared
 	StateGameOver
 )
 
@@ -25,6 +26,7 @@ type RunningGameEntities struct {
 	bricks []*entities.Brick
 	score  int
 	lives  int
+	level  int
 }
 
 type TitleScreenEntities struct {
@@ -52,14 +54,15 @@ func NewGame(screen tcell.Screen) *Game {
 	}
 }
 
-func (game *Game) setupRunningGameEntities(width int, height int) {
+func (game *Game) setupRunningGameEntities(width, height, level, score, lives int) {
 	game.runningGameEntities = &RunningGameEntities{
 		paddle: entities.NewPaddle(width, height, 23, 6),
 		ball:   entities.NewBall(width, height),
-		bricks: entities.GenerateRandomLayout(width, constants.TopHUDElementHeight+3),
+		bricks: entities.GenerateLayoutForLevel(width, constants.TopHUDElementHeight+3, level),
 	}
-	game.runningGameEntities.score = 0
-	game.runningGameEntities.lives = 3
+	game.runningGameEntities.score = score
+	game.runningGameEntities.lives = lives
+	game.runningGameEntities.level = level
 }
 
 func (game *Game) Run() {
@@ -77,7 +80,12 @@ func (game *Game) Run() {
 			scoredGained, remainingBricks := game.updatePhysics(width, height)
 			game.runningGameEntities.score += scoredGained
 			if remainingBricks == 0 {
-				game.gameState = StateGameOver
+				game.runningGameEntities.level++
+				if game.runningGameEntities.level > constants.MaxLevel {
+					game.gameState = StateGameOver
+				} else {
+					game.gameState = StateLevelCleared
+				}
 			}
 			game.runningGameEntities.ball.Move()
 			time.Sleep(50 * time.Millisecond)
@@ -91,10 +99,22 @@ func (game *Game) renderScreen(width int, height int) {
 	case StateTitle:
 		render.DrawTitleScreen(game.screen, width, height, game.titleScreenEntities.showSubtitle)
 	case StatePlaying:
-		render.RenderRunningGameScreen(game.screen, width, height, game.runningGameEntities.lives, game.runningGameEntities.score, game.runningGameEntities.paddle, game.runningGameEntities.bricks, game.runningGameEntities.ball)
+		render.RenderRunningGameScreen(
+			game.screen,
+			width,
+			height,
+			game.runningGameEntities.lives,
+			game.runningGameEntities.score,
+			game.runningGameEntities.level,
+			game.runningGameEntities.paddle,
+			game.runningGameEntities.bricks,
+			game.runningGameEntities.ball,
+		)
 	case StateGameOver:
 		gameWon := entities.AreAllBricksDead(game.runningGameEntities.bricks)
-		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.score, gameWon)
+		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.score, false, gameWon)
+	case StateLevelCleared:
+		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.score, true, false)
 	}
 }
 
@@ -122,7 +142,7 @@ func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChanne
 			case input.ActionEnterKeyPressed:
 				if game.gameState == StateTitle {
 					game.gameState = StatePlaying
-					game.setupRunningGameEntities(screenWidth, screenHeight)
+					game.setupRunningGameEntities(screenWidth, screenHeight, 0, 0, 3)
 				}
 
 			case input.ActionLeftKeyPressed:
@@ -139,8 +159,15 @@ func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChanne
 				game.running = false
 
 			case input.ActionRKeyPressed:
-				if game.gameState == StatePlaying || game.gameState == StateGameOver {
-					game.setupRunningGameEntities(screenWidth, screenHeight)
+				switch game.gameState {
+				case StatePlaying:
+					game.setupRunningGameEntities(screenWidth, screenHeight, 0, 0, 3)
+					game.gameState = StatePlaying
+				case StateGameOver:
+					game.setupRunningGameEntities(screenWidth, screenHeight, 0, 0, 3)
+					game.gameState = StatePlaying
+				case StateLevelCleared:
+					game.setupRunningGameEntities(screenWidth, screenHeight, game.runningGameEntities.level, game.runningGameEntities.score, game.runningGameEntities.lives)
 					game.gameState = StatePlaying
 				}
 			}
