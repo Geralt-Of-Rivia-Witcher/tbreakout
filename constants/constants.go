@@ -1,9 +1,10 @@
 package constants
 
 const (
-	BorderWidth          = 1
-	BottomBorderHeight   = 3
-	TopHUDElementHeight  = 5
-	MaxLevel             = 4
-	ScoreForHittingBrick = 100
+	BorderWidth           = 1
+	BottomBorderHeight    = 3
+	TopHUDElementHeight   = 5
+	MaxLevel              = 4
+	ScoreForHittingBrick  = 100
+	ScoreForClearingLevel = 500
 )

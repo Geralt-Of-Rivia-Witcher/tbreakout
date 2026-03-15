@@ -79,10 +79,11 @@ func (game *Game) Run() {
 		case StatePlaying:
 			brickHit := game.updatePhysics(width, height)
 			if brickHit {
-				game.runningGameEntities.score += (constants.ScoreForHittingBrick)
+				game.updateScore(BrickHitEvent)
 			}
 			arrAllBricksDead := entities.AreAllBricksDead(game.runningGameEntities.bricks)
 			if arrAllBricksDead {
+				game.updateScore(LevelClearedEvent)
 				game.runningGameEntities.level++
 				if game.runningGameEntities.level > constants.MaxLevel {
 					game.gameState = StateGameOver
