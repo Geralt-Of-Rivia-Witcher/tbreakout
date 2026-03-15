@@ -77,9 +77,12 @@ func (game *Game) Run() {
 			game.titleScreenEntities.showSubtitle = !game.titleScreenEntities.showSubtitle
 			time.Sleep(400 * time.Millisecond)
 		case StatePlaying:
-			scoredGained, remainingBricks := game.updatePhysics(width, height)
-			game.runningGameEntities.score += scoredGained
-			if remainingBricks == 0 {
+			brickHit := game.updatePhysics(width, height)
+			if brickHit {
+				game.runningGameEntities.score += (constants.ScoreForHittingBrick)
+			}
+			arrAllBricksDead := entities.AreAllBricksDead(game.runningGameEntities.bricks)
+			if arrAllBricksDead {
 				game.runningGameEntities.level++
 				if game.runningGameEntities.level > constants.MaxLevel {
 					game.gameState = StateGameOver
@@ -118,7 +121,7 @@ func (game *Game) renderScreen(width int, height int) {
 	}
 }
 
-func (game *Game) updatePhysics(width int, height int) (int, int) {
+func (game *Game) updatePhysics(width int, height int) bool {
 	physics.DetectWallCollision(width, game.runningGameEntities.ball)
 	isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.runningGameEntities.ball, game.runningGameEntities.paddle)
 	if !isAlive {
@@ -130,8 +133,8 @@ func (game *Game) updatePhysics(width int, height int) (int, int) {
 			game.gameState = StateGameOver
 		}
 	}
-	scoreGained, remainingBricks := physics.DetectBrickCollisionAndGetScoreGainedAndRemainingBricks(game.runningGameEntities.ball, game.runningGameEntities.bricks)
-	return scoreGained, remainingBricks
+	brickHit := physics.DetectBrickCollisionAndGetIfBrickHit(game.runningGameEntities.ball, game.runningGameEntities.bricks)
+	return brickHit
 }
 
 func (game *Game) handleInput(screenWidth int, screenHeight int, userInputChannel chan input.InputAction) {
