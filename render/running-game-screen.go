@@ -10,13 +10,13 @@ import (
 
 func RenderRunningGameScreen(
 	screen tcell.Screen,
-	screenWidth, screenHeight, lives, score, level int,
+	screenWidth, screenHeight, lives, score, level, combo int,
 	paddle *entities.Paddle,
 	bricks []*entities.Brick,
 	ball *entities.Ball,
 ) {
 	clear(screen)
-	DrawHUD(lives, score, screenWidth, screenHeight, level, screen)
+	DrawHUD(lives, score, screenWidth, screenHeight, level, combo, screen)
 	DrawPaddle(paddle, screen)
 	DrawBall(ball, screen)
 	DrawBricks(bricks, screen)
@@ -36,18 +36,21 @@ func DrawPaddle(paddle *entities.Paddle, screen tcell.Screen) {
 	}
 }
 
-func DrawHUD(lives, score, screenWidth, screenHeight, level int, screen tcell.Screen) {
+func DrawHUD(lives, score, screenWidth, screenHeight, level, combo int, screen tcell.Screen) {
 	border := borderStyle()
 	label := hudLabelStyle()
 	levelText := fmt.Sprintf("LEVEL: %d", level+1)
 	levelX := (screenWidth - len(levelText)) / 2
+	comboText := fmt.Sprintf("COMBO x%d", combo)
+	rightLaneX := screenWidth / 3 * 2
 
 	drawSpacer(screenWidth, constants.BorderWidth, screen)
 
 	drawText(screen, screenWidth/3, 3, "LIVES: ", label)
 	drawLives(screen, screenWidth/3+5, 3, lives)
 	drawText(screen, levelX, 3, levelText, levelStyle())
-	drawText(screen, screenWidth/3*2, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
+	drawText(screen, rightLaneX, 3, fmt.Sprintf("SCORE: %d", score), scoreStyle())
+	drawText(screen, rightLaneX, 4, comboText, comboStyle())
 
 	drawSpacer(screenWidth, constants.TopHUDElementHeight, screen)
 	drawBorders(screen, screenWidth, screenHeight, border)

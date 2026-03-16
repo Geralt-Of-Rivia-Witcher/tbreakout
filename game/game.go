@@ -27,6 +27,7 @@ type RunningGameEntities struct {
 	score  int
 	lives  int
 	level  int
+	combo  int
 }
 
 type TitleScreenEntities struct {
@@ -59,6 +60,7 @@ func (game *Game) setupRunningGameEntities(width, height, level, score, lives in
 		paddle: entities.NewPaddle(width, height, 23, 6),
 		ball:   entities.NewBall(width, height),
 		bricks: entities.GenerateLayoutForLevel(width, constants.TopHUDElementHeight+3, level),
+		combo:  0,
 	}
 	game.runningGameEntities.score = score
 	game.runningGameEntities.lives = lives
@@ -79,11 +81,12 @@ func (game *Game) Run() {
 		case StatePlaying:
 			brickHit := game.updatePhysics(width, height)
 			if brickHit {
-				game.updateScore(BrickHitEvent)
+				game.runningGameEntities.combo = min(game.runningGameEntities.combo+1, constants.MaxCombo)
+				game.updateScore(BrickHitEvent, game.runningGameEntities.combo)
 			}
 			arrAllBricksDead := entities.AreAllBricksDead(game.runningGameEntities.bricks)
 			if arrAllBricksDead {
-				game.updateScore(LevelClearedEvent)
+				game.updateScore(LevelClearedEvent, game.runningGameEntities.combo)
 				game.runningGameEntities.level++
 				if game.runningGameEntities.level > constants.MaxLevel {
 					game.gameState = StateGameOver
@@ -110,6 +113,7 @@ func (game *Game) renderScreen(width int, height int) {
 			game.runningGameEntities.lives,
 			game.runningGameEntities.score,
 			game.runningGameEntities.level,
+			game.runningGameEntities.combo,
 			game.runningGameEntities.paddle,
 			game.runningGameEntities.bricks,
 			game.runningGameEntities.ball,
@@ -127,6 +131,7 @@ func (game *Game) updatePhysics(width int, height int) bool {
 	isAlive := physics.DetectPaddleCollisionAndCheckIfAlive(height, game.runningGameEntities.ball, game.runningGameEntities.paddle)
 	if !isAlive {
 		game.runningGameEntities.lives--
+		game.runningGameEntities.combo = 0
 		if game.runningGameEntities.lives > 0 {
 			game.runningGameEntities.paddle.ResetPaddle(width)
 			game.runningGameEntities.ball.ResetBall(width, height)

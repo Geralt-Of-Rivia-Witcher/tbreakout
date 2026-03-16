@@ -10,6 +10,7 @@ var (
 	arcadeLabel   = tcell.NewRGBColor(255, 185, 0)
 	arcadeLevel   = tcell.NewRGBColor(255, 210, 95)
 	arcadeScore   = tcell.NewRGBColor(57, 255, 20)
+	arcadeCombo   = tcell.NewRGBColor(0, 245, 255)
 	arcadeLives   = tcell.NewRGBColor(255, 90, 160)
 	arcadePaddle  = tcell.NewRGBColor(0, 255, 255)
 	arcadeBall    = tcell.NewRGBColor(255, 240, 120)
@@ -34,6 +35,10 @@ func hudLabelStyle() tcell.Style {
 
 func scoreStyle() tcell.Style {
 	return baseStyle().Foreground(arcadeScore).Bold(true)
+}
+
+func comboStyle() tcell.Style {
+	return baseStyle().Foreground(arcadeCombo).Bold(true)
 }
 
 func levelStyle() tcell.Style {

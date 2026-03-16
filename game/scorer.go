@@ -11,10 +11,10 @@ const (
 	LevelClearedEvent
 )
 
-func (game *Game) updateScore(event ScoreEvent) {
+func (game *Game) updateScore(event ScoreEvent, combo int) {
 	switch event {
 	case BrickHitEvent:
-		game.runningGameEntities.score += constants.ScoreForHittingBrick
+		game.runningGameEntities.score += (constants.ScoreForHittingBrick * combo)
 	case LevelClearedEvent:
 		game.runningGameEntities.score += constants.ScoreForClearingLevel
 	}

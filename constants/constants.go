@@ -5,6 +5,7 @@ const (
 	BottomBorderHeight    = 3
 	TopHUDElementHeight   = 5
 	MaxLevel              = 4
-	ScoreForHittingBrick  = 100
-	ScoreForClearingLevel = 500
+	ScoreForHittingBrick  = 10
+	ScoreForClearingLevel = 50
+	MaxCombo              = 10
 )
