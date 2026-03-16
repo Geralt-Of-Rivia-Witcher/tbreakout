@@ -116,9 +116,9 @@ func (game *Game) renderScreen(width int, height int) {
 		)
 	case StateGameOver:
 		gameWon := entities.AreAllBricksDead(game.runningGameEntities.bricks)
-		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.score, false, gameWon)
+		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.level, game.runningGameEntities.score, false, gameWon)
 	case StateLevelCleared:
-		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.score, true, false)
+		render.DrawGameOverScreen(game.screen, width, height, game.runningGameEntities.level, game.runningGameEntities.score, true, false)
 	}
 }
 

@@ -8,8 +8,7 @@ import (
 
 func DrawGameOverScreen(
 	screen tcell.Screen,
-	screenWidth, screenHeight int,
-	score int,
+	screenWidth, screenHeight, level, score int,
 	levelCleared, gameWon bool,
 ) {
 	screen.SetStyle(baseStyle())
@@ -19,7 +18,7 @@ func DrawGameOverScreen(
 	var titleStyle tcell.Style
 
 	if levelCleared {
-		title = "LEVEL CLEARED!"
+		title = fmt.Sprintf("LEVEL %d CLEARED!", level)
 		titleStyle = gameWonStyle()
 	} else if gameWon {
 		title = "YOU WON!"
@@ -41,7 +40,7 @@ func DrawGameOverScreen(
 	drawCenteredLine(screen, screenWidth, centerY-2, '=', 29, dimStyle)
 
 	// Score
-	scoreText := fmt.Sprintf("HIGH SCORE  %d", score)
+	scoreText := fmt.Sprintf("SCORE  %d", score)
 	drawCenteredText(screen, screenWidth, centerY, scoreText, valueStyle)
 
 	var hintText string
